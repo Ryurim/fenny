@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fullstack4.fenny.mapper.MemberMapper"> <!--클래스가 있는 풀패키지 정보-->
+
+    <sql id="pwdNull">
+        <if test="member_pwd != null and member_pwd != ''">
+            , member_pwd = #{member_pwd}
+        </if>
+    </sql>
+
+
+    <insert id="regist">
+        insert into fenny_member(member_id, member_pwd, member_name, member_phone, member_email)
+        values(#{member_id}, #{member_pwd}, #{member_name}, #{member_phone}, #{member_email})
+    </insert>
+
+    <select id="view" resultType="org.fullstack4.fenny.domain.MemberVO">
+        select member_id, member_name, member_phone, member_email, member_pwd
+        from fenny_member
+        where member_id=#{member_id}
+    </select>
+
+    <update id="modify">
+        update fenny_member
+        set  member_phone=#{member_phone}
+        <include refid="pwdNull"/>
+        where member_id=#{member_id}
+    </update>
+
+    <select id="checkId" resultType="int">
+        SELECT COUNT(*)
+        FROM fenny_member
+        WHERE member_id=#{member_id}
+    </select>
+
+    <select id="checkEmail" resultType="int">
+
+        SELECT COUNT(*)
+        FROM fenny_member
+        WHERE member_email=#{member_email}
+    </select>
+</mapper>

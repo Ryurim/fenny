@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/mvc
+                           https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--
+    필수 항목 설정
+    어노테이션 방식 쓸거야
+    정적인 파일들 경로는 /resources 에 있을거야. 여기있는 애들은 스프링이 처리하지마. was가 알아서 할거야
+    -->
+    <mvc:annotation-driven/>
+    <mvc:resources mapping="/resources/**" location="/resources"/>
+
+    <!--
+    서블릿을 해석하기 위해서 디스패처가 읽어가야 하는 정보들
+    이러이러한 애들은 너가 서블릿에 매핑 시켜줘 . /WEB-INF/ 밑에 있으면서 .jsp 로 끝나는 애들을 해석해서 매핑시켜줘
+    @WebServlet(name="/BbsListController" value="/bbs/list") 면 /WEB-INF/bbs/list.jsp 랑 매핑
+    -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 위에 xmlns에 context 있어야해! (네임스페이스) 시작할 때 자동으로 불러와라 -->
+    <context:component-scan base-package="org.fullstack4.fenny.controller"/>
+
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="formatters">
+            <set>
+                <bean class="org.fullstack4.fenny.controller.formatter.LocalDateFormatter"/>
+                <bean class="org.fullstack4.fenny.controller.formatter.CheckboxFormatter"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="10240000"/>
+        <property name="defaultEncoding" value="utf-8"/>
+    </bean>
+
+    <mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven>
+</beans>

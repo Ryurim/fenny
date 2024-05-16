@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context.xsd  http://mybatis.org/schema/mybatis-spring  http://mybatis.org/schema/mybatis-spring.xsd
+
+                            http://www.springframework.org/schema/tx
+                            http://www.springframework.org/schema/tx/spring-tx.xsd
+
+                            http://www.springframework.org/schema/aop
+                            https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+        <property name="driverClassName" value="org.mariadb.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mariadb://localhost:3306/fenny"/>
+        <!--  절대 회사에서 localhost 쓰지 말것,, 웹서버 = db서버가 같은 머신 상에 존재하는 것 => db 뚫리면 웹 뚫리고 웹 뚫리면 db 뚫림!-->
+        <property name="username" value="root"/>
+        <property name="password" value="1234"/>
+
+        <!--여기부터 hicaricp에 대한 설정-->
+        <property name="dataSourceProperties">
+            <props>
+                <prop key="cachePrepStmts">true</prop> <!--캐시에 올려놓고 쓸거야. 속도 향상을 위해서 -->
+                <prop key="prepStmtCacheSize">250</prop> <!--캐시 사이즈는 250 -->
+                <prop key="prepStmtCacheSqlLimit">2048</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <constructor-arg ref="hikariConfig"/>
+    </bean>
+
+    <!--MyBatis 설정 부분-->
+    <!-- SqlSessionFactoryBean sqlSFB = new SqlSessionFactoryBean(dataSource); 와 같음 -->
+    <bean id="sqlSFB" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
+    </bean>
+
+    <!-- 트랜잭션 관리 객체 -->
+    <bean  id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- @Transactional 어노테이션 처리 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- apspect annotation 사용 설정 -->
+    <aop:aspectj-autoproxy/>
+    <!-- 트랜잭션 AOP 설정 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="regist*" rollback-for="Exception"/>
+            <tx:method name="modify*" rollback-for="Exception"/>
+            <tx:method name="delete*" rollback-for="Exception"/>
+            <tx:method name="reply_regist*" rollback-for="Exception"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut id="transactionPointcut" expression="within(org.fullstack4.fenny..*)"/>
+        <aop:advisor id="transactionAdvisor" pointcut-ref="transactionPointcut" advice-ref="txAdvice"/>
+    </aop:config>
+
+    <mybatis:scan base-package="org.fullstack4.fenny.mapper"></mybatis:scan>
+    <!--MyBatis 설정 부분-->
+<!--    메일-->
+<!--    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">-->
+
+<!--        <property name="host" value="smtp.gmail.com"/> &lt;!&ndash; 메이서버 호스트 &ndash;&gt;-->
+<!--        <property name="port" value="587"/> &lt;!&ndash; 메이서버 포트번호 &ndash;&gt;-->
+<!--        <property name="username" value="ssfu777@gmail.com"/>-->
+<!--        <property name="password" value="sawt cqdg npon xedh"/>-->
+<!--        &lt;!&ndash; 보안연결 SSL과 관련된 설정 &ndash;&gt;-->
+<!--        <property name="javaMailProperties">-->
+<!--            <props>-->
+<!--                <prop key="mail.transport.protocol">smtp</prop>-->
+<!--                <prop key="mail.smtp.auth">true</prop>-->
+<!--                <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>-->
+<!--                <prop key="mail.smtp.starttls.enable">true</prop>-->
+<!--                <prop key="mail.debug">true</prop>-->
+<!--                <prop key="mail.smtp.ssl.trust">smtp.gmail.com</prop>-->
+<!--                <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>-->
+
+<!--            </props>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+    <!--이 경로 밑에 컴포넌트화 할 수 있는 애들을 싹 다 뒤져서 빈으로 알아서 등록해줘 -->
+    <context:component-scan base-package="org.fullstack4.fenny.service"/>
+    <context:component-scan base-package="org.fullstack4.fenny.aop"/>
+    <context:component-scan base-package="org.fullstack4.fenny.config"/>
+</beans>

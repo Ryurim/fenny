@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fullstack4.fenny.mapper.StudyMapper"> <!--클래스가 있는 풀패키지 정보-->
+
+    <!-- 검색 조건문 -->
+    <sql id="whereCondition">
+        <foreach collection="typeArr" item="type">
+            <trim prefix="OR">
+                <choose>
+                    <when test="type == 't'.toString()">
+                        study_title like concat('%',#{search_word},'%')
+                    </when>
+                    <when test="type == 'c'.toString()">
+                        study_content like concat('%',#{search_word},'%' )
+                    </when>
+                </choose>
+            </trim>
+        </foreach>
+    </sql>
+
+
+    <sql id="product">
+        <trim prefix="where (" suffix=")" prefixOverrides="OR">
+            <foreach collection="typeArr" item="type">
+                <trim prefix="OR">
+                    <choose>
+                        <when test="type == 'T'.toString()">
+                            pro_name like concat('%',#{keyword},'%')
+                        </when>
+                        <when test="type == 'W'.toString()">
+                            pro_writer like concat('%',#{keyword},'%' )
+                        </when>
+                        <when test="type == 'C'.toString()">
+                            pro_company like concat('%',#{keyword},'%' )
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </trim>
+    </sql>
+
+    <insert id="registStudy">
+        insert into fenny_study(member_id, study_title, study_content, study_image, study_reveal, study_display_date_start, study_display_date_end, study_share, study_hashtag, study_category, share_id1, share_id2, share_id3, share_id4, share_id5)
+        values(#{member_id}, #{study_title}, #{study_content}, #{study_image}, #{study_reveal}, #{study_display_date_start}, #{study_display_date_end}, #{study_share}, #{study_hashtag}, #{study_category}, #{share_id1}, #{share_id2}, #{share_id3}, #{share_id4}, #{share_id5})
+    </insert>
+
+    <select id="viewStudy" resultType="org.fullstack4.fenny.domain.StudyVO">
+        select study_idx, member_id, study_title, study_content, study_image, study_reveal, study_display_date_start, study_display_date_end, study_reg_date, study_like_count, study_share, study_hashtag, study_category, share_id1, share_id2, share_id3, share_id4, share_id5
+        from fenny_study
+        where study_idx=#{study_idx}
+    </select>
+
+    <update id="modifyStudy">
+        update fenny_study
+        set study_title=#{study_title}, study_content=#{study_content}, study_image=#{study_image}, study_reveal=#{study_reveal}, study_display_date_start=#{study_display_date_start}, study_display_date_end=#{study_display_date_end}, study_share=#{study_share}, study_hashtag=#{study_hashtag}, study_category=#{study_category}
+        , share_id1=#{share_id1}, share_id2=#{share_id2}, share_id3=#{share_id3}, share_id4=#{share_id4}, share_id5=#{share_id5}
+        where study_idx=#{study_idx}
+    </update>
+
+    <insert id="shareStudy">
+        insert into fenny_study_detail(study_idx, receive_id)
+        values(#{study_idx}, #{receive_id})
+    </insert>
+
+    <delete id="deleteStudy">
+        delete from fenny_study
+        where study_idx in (#{study_idx})
+    </delete>
+
+
+
+    <select id="getStudy" resultType="org.fullstack4.fenny.domain.StudyVO">
+        select study_idx, member_id, study_title, study_content, study_image, study_reveal, study_display_date_start, study_display_date_end, study_reg_date, study_like_count, study_share, study_hashtag, study_category, share_id1, share_id2, share_id3, share_id4, share_id5
+        from fenny_study
+        where member_id=#{member_id}
+        <if test="search_type != null">
+            <foreach collection="search_type" item="type" >
+                <trim prefix="AND">
+                    <choose>
+                        <when test="type == 't'.toString()">
+                            study_title like concat('%', #{search_word},'%')
+                        </when>
+                        <when test="type == 'c'.toString()">
+                            study_content like concat('%', #{search_word},'%' )
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </if>
+        <if test="search_date1 != null and search_date1 != 'null' and search_date1 != ''">
+            and study_display_date_start >= #{search_date1}
+        </if>
+        <if test="search_date2 != null and search_date2 != 'null'  and search_date2 != ''">
+            and study_display_date_end <![CDATA[<=]]> #{search_date2}
+        </if>
+        <choose>
+            <when test="sortField != null and sortDir != null">
+                ORDER BY #{sortField} #{sortDir}
+            </when>
+            <otherwise>
+                ORDER BY study_reg_date DESC
+            </otherwise>
+        </choose>
+        limit #{page_skip_count}, #{page_size}
+    </select>
+
+    <select id="totalStudy" resultType="int">
+        select count(*) from fenny_study
+        where member_id=#{member_id}
+        <if test="search_type != null">
+            <foreach collection="search_type" item="type" >
+                <trim prefix="AND">
+                    <choose>
+                        <when test="type == 't'.toString()">
+                            study_title like concat('%', #{search_word},'%')
+                        </when>
+                        <when test="type == 'c'.toString()">
+                            study_content like concat('%', #{search_word},'%' )
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </if>
+        <if test="search_date1 != null and search_date1 != 'null' and search_date1 != ''">
+            and study_display_date_start >= #{search_date1}
+        </if>
+        <if test="search_date2 != null and search_date2 != 'null'  and search_date2 != ''">
+            and study_display_date_end <![CDATA[<=]]> #{search_date2}
+        </if>
+    </select>
+
+
+    <update id="updateLike">
+        update fenny_study
+        set study_like_count = study_like_count + 1
+        where study_idx = #{study_idx}
+    </update>
+
+    <insert id="likeMember">
+        insert into fenny_study_like(study_idx, click_id, like_yn)
+        values(#{study_idx}, #{click_id}, like_yn)
+    </insert>
+
+
+    <select id="shareId" resultType="org.fullstack4.fenny.domain.MemberVO">
+        select member_id, member_name
+        from fenny_member
+        where member_id != #{member_id}
+    </select>
+</mapper>
