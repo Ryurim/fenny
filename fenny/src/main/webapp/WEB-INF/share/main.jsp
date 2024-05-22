@@ -102,6 +102,11 @@
         </div>
     </form>
 
+    <div>
+        <button onclick="location.href='/share/main'">내가 한 공유</button>
+        <button onclick="location.href='/share/main2'">내가 받은 공유</button>
+        <button></button>
+    </div>
 
     <div class="pd-ltr-20 xs-pd-20-10">
         <div class="min-height-200px">
@@ -122,10 +127,8 @@
                     <tr>
                         <th>번호</th>
                         <th>제목</th>
+                        <th>공유자</th>
                         <th>등록일</th>
-                        <th>좋아요</th>
-                        <th>오늘의 학습 노출 여부</th>
-                        <th>오늘의 학습 노출 기간</th>
                     </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
@@ -136,12 +139,10 @@
                                 <tr>
                                     <td class="text-nowrap">${qnaList.total_count - ((qnaList.page-1)*qnaList.page_size + (status.count-1))}</td>
                                     <td class="text-nowrap"><a
-                                            href="/my/view?study_idx=${dto.study_idx}">${dto.study_title}</a>
+                                            href="/share/view?study_idx=${dto.study_idx}">${dto.study_title}</a>
                                     </td>
+                                    <td class="text-nowrap">${dto.share_id1} ${dto.share_id2} ${dto.share_id3} ${dto.share_id4} ${dto.share_id5}</td>
                                     <td class="text-nowrap">${dto.study_reg_date}</td>
-                                    <td class="text-nowrap">${dto.study_like_count}</td>
-                                    <td class="text-nowrap">${dto.study_reveal}</td>
-                                    <td class="text-nowrap">${dto.study_display_date_start} ~ ${dto.study_display_date_end}</td>
                                 </tr>
 
                             </c:forEach>
@@ -205,6 +206,7 @@
     //정렬 필터
     function goList() {
         const frmSearch = document.getElementById("frmSearch");
+        console.log(document.getElementById("search_word").value);
         frmSearch.submit();
     }
 </script>

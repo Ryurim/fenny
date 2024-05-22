@@ -11,6 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="/resources/resources/jquery/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light shadow">

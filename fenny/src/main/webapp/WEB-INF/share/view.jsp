@@ -139,10 +139,11 @@
                         </c:if>
                     </div>
 
-                    <button class="btn btn-primary" type="button" onclick="location.href='/my/modify?study_idx=${studyDTO.study_idx}'">수정하기</button>
-                    <button class="btn btn-secondary" type="button" onclick="location.href='/my/main'">목록으로</button>
-
-
+<%--                    <button class="btn btn-primary" type="button" onclick="location.href='/my/modify?study_idx=${studyDTO.study_idx}'">수정하기</button>--%>
+                    <button class="btn btn-secondary" type="button" onclick="location.href='/share/main'">목록으로</button>
+                <c:if test="${sessionScope.member_id eq studyDTO.member_id}">
+                    <button class="btn btn-primary" type="button"  onclick="location.href='/my/modify?study_idx=${studyDTO.study_idx}'">수정하기</button>
+                </c:if>
 
 
             </div>

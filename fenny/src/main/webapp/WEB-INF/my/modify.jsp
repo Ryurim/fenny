@@ -96,9 +96,16 @@
                         <input type="radio" class="custom-radio" name="study_share" <c:if test="${studyDTO.study_share eq 'Y'}" >checked</c:if> value="Y"><label>&nbsp;Y</label>
                         <input type="radio" class="custom-radio" name="study_share" <c:if test="${studyDTO.study_share eq 'N'}" >checked</c:if> value="N"><label>&nbsp;N</label>
                     </div>
+
                     <div class="form-group">
+                        <c:if test="${not empty studyDTO.study_image}">
+                        <div id="orgImg">
+                            <img height="600" width="400" src="/resources/resources/uploads/img/study/${studyDTO.study_image}" alt="" id="preview">
+                            <input type="hidden" name="file" value="${studyDTO.study_image}">
+                        </div>
+                        </c:if>
                         <label>이미지</label>
-                        <input type="file" name="upload" class="form-control-file form-control height-auto"  accept="image/png, image/jpeg" >
+                        <input type="file" name="upload" class="form-control-file form-control height-auto"  accept="image/png, image/jpeg" onchange="readURL(this)"  >
                     </div>
                     <div class="form-group">
                         <label for="study_category">분야</label>
@@ -116,55 +123,77 @@
                         <label>노출 기간 끝</label>
                         <input type="date" class="form-control col-md-4" name="study_display_date_end" placeholder="선택" >
                     </div>
-                    <div class="form-group">
-                        <label>공유할 사람1</label>
-                        <select class="form-control" name="share_id1">
-                            <option value="" >선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id1}">selected</c:if>>${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>공유할 사람2</label>
-                        <select class="form-control"  name="share_id2" >
-                            <option value="">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id2}">selected</c:if>>${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>공유할 사람3</label>
-                        <select class="form-control"  name="share_id3">
-                            <option value="">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id3}">selected</c:if>>${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>공유할 사람4</label>
-                        <select class="form-control" name="share_id4">
-                            <option value="">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id4}">selected</c:if>>${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>공유할 사람5</label>
-                        <select class="form-control"  name="share_id5">
-                            <option value="">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id5}">selected</c:if>>${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
+<%--                    <div class="form-group">--%>
+<%--                        <label>공유할 사람1</label>--%>
+<%--                        <select class="form-control" name="share_id1">--%>
+<%--                            <option value="" >선택</option>--%>
+<%--                            <c:forEach var="dto" items="${memberDTOList}">--%>
+<%--                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id1}">selected</c:if>>${dto.member_id}</option>--%>
+<%--                            </c:forEach>--%>
+<%--                        </select>--%>
+<%--                    </div>--%>
+<%--                    <div class="form-group">--%>
+<%--                        <label>공유할 사람2</label>--%>
+<%--                        <select class="form-control"  name="share_id2" >--%>
+<%--                            <option value="">선택</option>--%>
+<%--                            <c:forEach var="dto" items="${memberDTOList}">--%>
+<%--                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id2}">selected</c:if>>${dto.member_id}</option>--%>
+<%--                            </c:forEach>--%>
+<%--                        </select>--%>
+<%--                    </div>--%>
+<%--                    <div class="form-group">--%>
+<%--                        <label>공유할 사람3</label>--%>
+<%--                        <select class="form-control"  name="share_id3">--%>
+<%--                            <option value="">선택</option>--%>
+<%--                            <c:forEach var="dto" items="${memberDTOList}">--%>
+<%--                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id3}">selected</c:if>>${dto.member_id}</option>--%>
+<%--                            </c:forEach>--%>
+<%--                        </select>--%>
+<%--                    </div>--%>
+<%--                    <div class="form-group">--%>
+<%--                        <label>공유할 사람4</label>--%>
+<%--                        <select class="form-control" name="share_id4">--%>
+<%--                            <option value="">선택</option>--%>
+<%--                            <c:forEach var="dto" items="${memberDTOList}">--%>
+<%--                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id4}">selected</c:if>>${dto.member_id}</option>--%>
+<%--                            </c:forEach>--%>
+<%--                        </select>--%>
+<%--                    </div>--%>
+<%--                    <div class="form-group">--%>
+<%--                        <label>공유할 사람5</label>--%>
+<%--                        <select class="form-control"  name="share_id5">--%>
+<%--                            <option value="">선택</option>--%>
+<%--                            <c:forEach var="dto" items="${memberDTOList}">--%>
+<%--                                <option value="${dto.member_id}" <c:if test="${dto.member_id eq studyDTO.share_id5}">selected</c:if>>${dto.member_id}</option>--%>
+<%--                            </c:forEach>--%>
+<%--                        </select>--%>
+<%--                    </div>--%>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Multiple Select</label>
+                            <select class="custom-select2 form-control" multiple="multiple" style="width: 100%;" name="share">
+                                <option value="" >선택</option>
+                                <c:forEach var="dto" items="${memberDTOList}">
+                                    <option value="${dto.member_id}">${dto.member_id}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
                     </div>
                     <button class="btn btn-primary" type="submit">수정하기</button>
                     <button class="btn btn-secondary" type="reset">취소하기</button>
                 </form>
+                <div class="form-group">
+                    <label for="study_hashtag">공유받은 사람</label>
+                    <div class="d-flex flex-column gap-3 justify-content-center" >
 
+                        <c:forEach items="${studyShareDTOList}" var="dto" varStatus="status">
+                            <input type="hidden" name="to_id" id="to_id" value="${dto.to_id}">
+                            <span id="share${status}">${dto.to_id} ${dto.reg_date} <button class="btn text-danger"  id="btnDelete1" onclick="askDelete()">X</button></span>
+                        </c:forEach>
+                       
+                    </div>
+                </div>
 
 
             </div>
@@ -186,6 +215,52 @@
         const frmSearch = document.getElementById("frmSearch");
         frmSearch.submit();
     }
+
+
+    //사진 미리보기
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            document.getElementById('preview').src = "";
+        }
+    }
+
+    function askDelete() {
+        let deleteYN = confirm("공유를 취소하시겠습니까?");
+        if (deleteYN) {
+            deleteShare();
+        }
+    }
+
+    function deleteShare(){
+        event.preventDefault();
+        event.stopPropagation();
+        var idx = $('#study_idx').val(); //id값이 "id"인 입력란의 값을 저장
+        var to_id = $('#to_id').val();
+        var spanInner = $('#share${status}');
+        $.ajax({
+            url:'/study/deleteShare', //Controller에서 요청 받을 주소
+            type:'post', //POST 방식으로 전달
+            data:{study_idx:idx, to_id:to_id},
+            dataType : 'text',
+            success:function(result){ //컨트롤러에서 넘어온 cnt값을 받는다
+                spanInner.remove();
+                console.log(result);
+            },
+            error : function(xhr, status, error) {
+                console.log("xhr! : " + xhr);
+                console.log("status! : " + status);
+                console.log("error! : " + error);
+            }
+        })
+
+    }
+
 </script>
 </body>
 </html>

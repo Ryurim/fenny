@@ -98,9 +98,15 @@
                     </div>
 
                     <div class="form-group">
+
+                            <div id="orgImg">
+<%--                                <div><span>미리보기</span></div><br>--%>
+                            </div>
+
                         <label>이미지</label>
-                        <input type="file" name="upload" class="form-control-file form-control height-auto"  accept="image/png, image/jpeg" >
+                        <input type="file" name="upload" class="form-control-file form-control height-auto"  accept="image/png, image/jpeg" onchange="readURL(this)"  >
                     </div>
+
                     <div class="form-group">
                         <label for="study_category">분야</label>
                         <input class="form-control" name="study_category" id="study_category" value="${studyDTO.study_category}">
@@ -117,53 +123,10 @@
                         <label>노출 기간 끝</label>
                         <input type="date" class="form-control col-md-4" name="study_display_date_end" placeholder="선택" >
                     </div>
-                    <div class="form-group">
-                        <label>공유할 사람1</label>
-                        <select class="form-control"  name="share_id1">
-                            <option value="" name="share_id1">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}">${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>공유할 사람2</label>
-                        <select class="form-control"  name="share_id2">
-                            <option value="" name="share_id2">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}">${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>공유할 사람3</label>
-                        <select class="form-control"  name="share_id3">
-                            <option value="" name="share_id3">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}">${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>공유할 사람4</label>
-                        <select class="form-control" name="share_id4">
-                            <option value="" name="share_id4">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}">${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>공유할 사람5</label>
-                        <select class="form-control"  name="share_id5">
-                            <option value="" name="share_id5">선택</option>
-                            <c:forEach var="dto" items="${memberDTOList}">
-                                <option value="${dto.member_id}">${dto.member_id}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
+
+
                     <button class="btn btn-primary" type="submit">등록하기</button>
-                    <button class="btn btn-secondary" type="reset">취소하기</button>
+                    <button class="btn btn-secondary" type="reset" onclick="location.href='/my/regist'">초기화</button>
                 </form>
 
 
@@ -187,6 +150,33 @@
         const frmSearch = document.getElementById("frmSearch");
         frmSearch.submit();
     }
+
+
+    //사진 미리보기
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+
+
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("orgImg");
+                let img = document.createElement("img");
+                img.height=600;
+                img.width=400;
+                img.alt="미리보기";
+                img.id = "preview";
+                orgImg.append(img);
+
+                document.getElementById('preview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            document.getElementById('preview').src = "";
+        }
+    }
+
+
 </script>
 </body>
 </html>

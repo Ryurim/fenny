@@ -3,17 +3,12 @@ package org.fullstack4.fenny.controller.study;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.fullstack4.fenny.common.FileUtil;
-import org.fullstack4.fenny.dto.MemberDTO;
-import org.fullstack4.fenny.dto.PageRequestDTO;
-import org.fullstack4.fenny.dto.PageResponseDTO;
-import org.fullstack4.fenny.dto.StudyDTO;
+import org.fullstack4.fenny.dto.*;
 import org.fullstack4.fenny.service.StudyServiceIf;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -68,6 +63,7 @@ public class StudyController {
     public void myRegistGET(HttpSession session,
                             Model model) {
         List<MemberDTO> memberDTOList = studyService.shareId(String.valueOf(session.getAttribute("member_id")));
+
         model.addAttribute("memberDTOList", memberDTOList);
     }
 
@@ -97,8 +93,8 @@ public class StudyController {
             log.info("file  : "+file);
             log.info("getOriginalFilename : "+file.getOriginalFilename());
 
-            String org_file = FileUtil.uploadFile(req, "D:\\java4\\BEC\\src\\main\\webapp\\uploads\\img\\study");
-            study_file = FileUtil.renameFile("D:\\java4\\BEC\\src\\main\\webapp\\resources\\uploads\\img\\study", org_file);
+            String org_file = FileUtil.uploadFile(req, "D:\\java4\\fenny\\fenny\\src\\main\\webapp\\resources\\uploads\\img\\study", file);
+            study_file = FileUtil.renameFile("D:\\java4\\fenny\\fenny\\src\\main\\webapp\\resources\\uploads\\img\\study", org_file, FileUtil.fileExt(org_file), file);
 
 
             log.info("study_file : "+study_file);
@@ -121,6 +117,8 @@ public class StudyController {
                           HttpSession session,
                           Model model) {
         StudyDTO studyDTO = studyService.viewStudy(study_idx);
+        List<StudyShareDTO> studyShareDTOList = studyService.getShareId(study_idx);
+        model.addAttribute("studyShareDTOList", studyShareDTOList);
         model.addAttribute("studyDTO", studyDTO);
     }
     @GetMapping("my/modify")
@@ -129,7 +127,9 @@ public class StudyController {
                             Model model) {
         StudyDTO studyDTO = studyService.viewStudy(study_idx);
         List<MemberDTO> memberDTOList = studyService.shareId(String.valueOf(session.getAttribute("member_id")));
+        List<StudyShareDTO> studyShareDTOList = studyService.getShareId(study_idx);
         model.addAttribute("memberDTOList", memberDTOList);
+        model.addAttribute("studyShareDTOList", studyShareDTOList);
         model.addAttribute("studyDTO", studyDTO);
     }
 
@@ -137,9 +137,13 @@ public class StudyController {
     public String myModifyPOST(@Valid StudyDTO studyDTO,
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes,
+                               HttpServletRequest req,
+                               @RequestParam(value = "file", defaultValue = "") String upload,
                                @RequestParam("upload") MultipartFile file,
+                               StudyShareDTO studyShareDTO,
+                               @RequestParam(value = "share", defaultValue = "") String[] share,
                                HttpSession session,
-                               Model model) {
+                               Model model) throws ServletException, IOException {
 
         log.info("modifyPOST");
         if (bindingResult.hasErrors()) {
@@ -149,7 +153,39 @@ public class StudyController {
 
             return "redirect:/my/modify?study_idx="+studyDTO.getStudy_idx();
         }
-        int result = studyService.modifyStudy(studyDTO);
+
+        int result = 0;
+        String study_file = "";
+        if(file != null &&  file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty() ){
+
+            log.info("file  : "+file);
+            log.info("getOriginalFilename : "+file.getOriginalFilename());
+
+            String org_file = FileUtil.uploadFile(req, "D:\\java4\\fenny\\fenny\\src\\main\\webapp\\resources\\uploads\\img\\study", file);
+            study_file = FileUtil.renameFile("D:\\java4\\fenny\\fenny\\src\\main\\webapp\\resources\\uploads\\img\\study", org_file, FileUtil.fileExt(org_file), file);
+
+
+            log.info("study_file : "+study_file);
+        }
+        if (study_file != null && !study_file.isEmpty()) {
+            studyDTO.setStudy_image(study_file);
+            result = studyService.modifyStudy(studyDTO);
+        }
+        else {
+            studyDTO.setStudy_image(upload);
+            result = studyService.modifyStudy(studyDTO);
+        }
+
+        if (share != null && share.length > 0) {
+
+            for (String s : share) {
+                studyShareDTO.setTo_id(s);
+                log.info(studyShareDTO);
+                studyService.shareId(studyShareDTO);
+            }
+        }
+
+
         if (result > 0) {
             return "redirect:/my/view?study_idx=" + studyDTO.getStudy_idx();
         }
@@ -166,9 +202,68 @@ public class StudyController {
 
 
     @GetMapping("/share/main")
-    public void shareMain() {
+    public void shareMain(HttpSession session,
+                       @Valid PageRequestDTO pageRequestDTO,
+                       @RequestParam(name = "sortMethod", defaultValue = "") String sortMethod,
+                       Model model) {
+        log.info("Share Main");
+        pageRequestDTO.setMember_id(String.valueOf(session.getAttribute("member_id")));
+        String sortField = "study_reg_date";
+        String sortDir = "desc";
 
+        log.info("sortMethod :"+sortMethod);
+        if(sortMethod != null && !sortMethod.isEmpty()) {
+            sortField = sortMethod.substring(0, sortMethod.indexOf("||"));
+            sortDir = sortMethod.substring(sortMethod.indexOf("||")).replace("||", "");
+        }
+
+        // 정렬 정보를 PageRequestDTO에 설정
+        pageRequestDTO.setSortField(sortField);
+        pageRequestDTO.setSortDir(sortDir);
+
+        log.info("sortField1111 :"+ sortField);
+        log.info("sortDir111111 :"+ sortDir);
+        log.info("sortField2222 :"+ pageRequestDTO.getSortField());
+        log.info("sortDir22222 :"+ pageRequestDTO.getSortDir());
+
+        log.info("pageRequestDTO : {}", pageRequestDTO);
+        PageResponseDTO<StudyDTO> studyList = studyService.getShare(pageRequestDTO);
+
+        log.info("studyList : {}", studyList);
+        model.addAttribute("qnaList", studyList);
     }
+
+    @GetMapping("/share/main2")
+    public void shareMain2(HttpSession session,
+                          @Valid PageRequestDTO pageRequestDTO,
+                          @RequestParam(name = "sortMethod", defaultValue = "") String sortMethod,
+                          Model model) {
+        log.info("Share Main");
+        pageRequestDTO.setMember_id(String.valueOf(session.getAttribute("member_id")));
+        String sortField = "study_reg_date";
+        String sortDir = "desc";
+
+        log.info("sortMethod :"+sortMethod);
+        if(sortMethod != null && !sortMethod.isEmpty()) {
+            sortField = sortMethod.substring(0, sortMethod.indexOf("||"));
+            sortDir = sortMethod.substring(sortMethod.indexOf("||")).replace("||", "");
+        }
+
+        // 정렬 정보를 PageRequestDTO에 설정
+        pageRequestDTO.setSortField(sortField);
+        pageRequestDTO.setSortDir(sortDir);
+
+        log.info("sortField1111 :"+ sortField);
+        log.info("sortDir111111 :"+ sortDir);
+        log.info("sortField2222 :"+ pageRequestDTO.getSortField());
+        log.info("sortDir22222 :"+ pageRequestDTO.getSortDir());
+
+        log.info("pageRequestDTO : {}", pageRequestDTO);
+        PageResponseDTO<StudyDTO> studyList = studyService.getShare2(pageRequestDTO);
+        log.info("studyList : {}", studyList);
+        model.addAttribute("qnaList", studyList);
+    }
+
     @GetMapping("/share/regist")
     public void shareRegistGET() {
 
@@ -178,9 +273,13 @@ public class StudyController {
         return null;
     }
     @GetMapping("/share/view")
-    public void shareViewGET() {
-
+    public void shareViewGET(@RequestParam int study_idx,
+                          HttpSession session,
+                          Model model) {
+        StudyDTO studyDTO = studyService.viewStudy(study_idx);
+        model.addAttribute("studyDTO", studyDTO);
     }
+
     @GetMapping("share/modify")
     public void shareModifyGET() {
 
@@ -192,5 +291,21 @@ public class StudyController {
     @PostMapping("/share/delete")
     public String shareDeleteGET() {
         return "redirect:/share/main";
+    }
+
+    @RequestMapping(value = "/study/deleteShare1", method = RequestMethod.POST, produces = "application/text;charset=UTF-8")
+    @ResponseBody
+    public String deleteShare1(@RequestParam int study_idx) {
+        String result = String.valueOf(studyService.deleteShare1(study_idx));
+        return result;
+    }
+
+    @RequestMapping(value = "/study/deleteShare", method = RequestMethod.POST, produces = "application/text;charset=UTF-8")
+    @ResponseBody
+    public String deleteShare(@RequestParam int study_idx, @RequestParam String to_id, StudyShareDTO studyShareDTO) {
+        studyShareDTO.setTo_id(to_id);
+        studyShareDTO.setStudy_idx(study_idx);
+        String result = String.valueOf(studyService.deleteShare(studyShareDTO));
+        return result;
     }
 }

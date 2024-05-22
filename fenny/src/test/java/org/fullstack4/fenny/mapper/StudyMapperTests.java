@@ -110,4 +110,22 @@ public class StudyMapperTests {
         List<MemberVO> list = studyMapper.shareId(member_id);
         log.info(list);
     }
+
+    @Test
+    public void getShare() {
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .member_id("test")
+                .page(1)
+                .page_size(10)
+                .sortDir("study_like_count")
+                .sortField("asc")
+                .build();
+        int total_count = studyMapper.totalShare(pageRequestDTO);
+        List<StudyVO> bbsList = studyMapper.getShare(pageRequestDTO);
+
+        log.info("===============================================");
+        log.info("total_count : " + total_count);
+        bbsList.forEach(list->log.info(list));
+        log.info("===============================================");
+    }
 }

@@ -76,15 +76,21 @@
 
 
                     <input type="hidden" name="member_id" value="${sessionScope.member_id}">
-                    <input type="hidden" name="study_idx" value="${studyDTO.study_idx}">
+                    <input type="hidden" name="study_idx" id="study_idx" value="${studyDTO.study_idx}">
                     <div class="form-group">
                         <label for="study_title">제목</label>
                         <input class="form-control" name="study_title" id="study_title" value="${studyDTO.study_title}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="study_title">좋아요 수</label>
-                        <input class="form-control" name="study_title" id="study_title" value="${studyDTO.study_like_count}" readonly>
+                        <input class="form-control" name="study_like_count" id="study_like_count" value="${studyDTO.study_like_count}" readonly>
                     </div>
+                <c:if test="${not empty studyDTO.study_image}">
+                <div class="form-group">
+                    <label>이미지</label>
+                    <img height="600" width="400" src="/resources/resources/uploads/img/study/${studyDTO.study_image}" alt="">
+                </div>
+                </c:if>
                     <div class="form-group">
                         <label for="study_content">내용</label>
                         <textarea class="form-control" name="study_content" id="study_content" readonly>${studyDTO.study_content}</textarea>
@@ -107,10 +113,7 @@
                         <input type="date" class="form-control col-md-4" value="${studyDTO.study_display_date_start}" name="study_display_date_start" placeholder="선택" readonly> ~
                         <input type="date" class="form-control col-md-4" value="${studyDTO.study_display_date_end}" name="study_display_date_end" placeholder="선택" readonly >
                     </div>
-                    <div class="form-group">
-                        <label>이미지</label>
-                        <input type="file" name="upload" class="form-control-file form-control height-auto"  accept="image/png, image/jpeg" readonly >
-                    </div>
+
                     <div class="form-group">
                         <label for="study_category">분야</label>
                         <input class="form-control" name="study_category" id="study_category" value="${studyDTO.study_category}" readonly>
@@ -121,22 +124,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="study_hashtag">공유한 사람</label>
-                        <c:if test="${not empty studyDTO.share_id1}">
-                            <input class="form-control" type="text" name="share_id1" value="${studyDTO.share_id1}" readonly>
-                        </c:if>
-                        <c:if test="${not empty studyDTO.share_id2}">
-                            <input class="form-control" ="text" name="share_id1" value="${studyDTO.share_id2}" readonly>
-                        </c:if>
-                        <c:if test="${not empty studyDTO.share_id3}">
-                            <input class="form-control" type="text" name="share_id1" value="${studyDTO.share_id3}" readonly>
-                        </c:if>
-                        <c:if test="${not empty studyDTO.share_id4}">
-                            <input class="form-control" type="text" name="share_id1" value="${studyDTO.share_id4}" readonly>
-                        </c:if>
-                        <c:if test="${not empty studyDTO.share_id5}">
-                            <input class="form-control" type="text" name="share_id1" value="${studyDTO.share_id5}" readonly>
-                        </c:if>
+                        <label for="study_hashtag">공유받은 사람</label>
+                        <div class="d-flex flex-column gap-3 justify-content-center" >
+
+                           <c:forEach items="${studyShareDTOList}" var="dto" varStatus="status">
+                               <input type="hidden" name="to_id" id="to_id" value="${dto.to_id}">
+                               <span id="share${status}">${dto.to_id} ${dto.reg_date} <button class="btn text-danger"  id="btnDelete1" onclick="askDelete()">X</button></span>
+                           </c:forEach>
+
+                        </div>
                     </div>
 
                     <button class="btn btn-primary" type="button" onclick="location.href='/my/modify?study_idx=${studyDTO.study_idx}'">수정하기</button>
@@ -159,10 +155,151 @@
 <script src="/resources/resources/vendors/scripts/process.js"></script>
 <script src="/resources/resources/vendors/scripts/layout-settings.js"></script>
 <script>
-    //정렬 필터
-    function goList() {
-        const frmSearch = document.getElementById("frmSearch");
-        frmSearch.submit();
+
+
+
+    function askDelete() {
+        let deleteYN = confirm("공유를 취소하시겠습니까?");
+        if (deleteYN) {
+            deleteShare();
+        }
+    }
+
+    function deleteShare(){
+        event.preventDefault();
+        event.stopPropagation();
+        var idx = $('#study_idx').val(); //id값이 "id"인 입력란의 값을 저장
+        var to_id = $('#to_id').val();
+        var spanInner = $('#share${status}');
+        $.ajax({
+            url:'/study/deleteShare', //Controller에서 요청 받을 주소
+            type:'post', //POST 방식으로 전달
+            data:{study_idx:idx, to_id:to_id},
+            dataType : 'text',
+            success:function(result){ //컨트롤러에서 넘어온 cnt값을 받는다
+                spanInner.remove();
+                console.log(result);
+            },
+            error : function(xhr, status, error) {
+                console.log("xhr! : " + xhr);
+                console.log("status! : " + status);
+                console.log("error! : " + error);
+            }
+        })
+
+    }
+
+    function deleteShare2(){
+        event.preventDefault();
+        event.stopPropagation();
+        var id = $('.btnDelete').val(); //id값이 "id"인 입력란의 값을 저장
+        $.ajax({
+            url:'/member/deleteShare', //Controller에서 요청 받을 주소
+            type:'post', //POST 방식으로 전달
+            data:{member_id:id},
+            dataType : 'text',
+            success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
+                console.log(cnt);
+                if(cnt == 0){ //cnt가 1이 아니면(=0일 경우) -> 사용 가능한 아이디
+                    $('.id_ok').css("display","inline-block");
+                    $('.id_already').css("display", "none");
+                } else { // cnt가 1일 경우 -> 이미 존재하는 아이디
+                    $('.id_already').css("display","inline-block");
+                    $('.id_ok').css("display", "none");
+                    // $('#member_id').val('');
+                }
+            },
+            error : function(xhr, status, error) {
+                console.log("xhr! : " + xhr);
+                console.log("status! : " + status);
+                console.log("error! : " + error);
+            }
+        })
+
+    }
+    function deleteShare3(){
+        event.preventDefault();
+        event.stopPropagation();
+        var id = $('.btnDelete').val(); //id값이 "id"인 입력란의 값을 저장
+        $.ajax({
+            url:'/member/deleteShare', //Controller에서 요청 받을 주소
+            type:'post', //POST 방식으로 전달
+            data:{member_id:id},
+            dataType : 'text',
+            success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
+                console.log(cnt);
+                if(cnt == 0){ //cnt가 1이 아니면(=0일 경우) -> 사용 가능한 아이디
+                    $('.id_ok').css("display","inline-block");
+                    $('.id_already').css("display", "none");
+                } else { // cnt가 1일 경우 -> 이미 존재하는 아이디
+                    $('.id_already').css("display","inline-block");
+                    $('.id_ok').css("display", "none");
+                    // $('#member_id').val('');
+                }
+            },
+            error : function(xhr, status, error) {
+                console.log("xhr! : " + xhr);
+                console.log("status! : " + status);
+                console.log("error! : " + error);
+            }
+        })
+
+    }
+    function deleteShare4(){
+        event.preventDefault();
+        event.stopPropagation();
+        var id = $('.btnDelete').val(); //id값이 "id"인 입력란의 값을 저장
+        $.ajax({
+            url:'/member/deleteShare', //Controller에서 요청 받을 주소
+            type:'post', //POST 방식으로 전달
+            data:{member_id:id},
+            dataType : 'text',
+            success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
+                console.log(cnt);
+                if(cnt == 0){ //cnt가 1이 아니면(=0일 경우) -> 사용 가능한 아이디
+                    $('.id_ok').css("display","inline-block");
+                    $('.id_already').css("display", "none");
+                } else { // cnt가 1일 경우 -> 이미 존재하는 아이디
+                    $('.id_already').css("display","inline-block");
+                    $('.id_ok').css("display", "none");
+                    // $('#member_id').val('');
+                }
+            },
+            error : function(xhr, status, error) {
+                console.log("xhr! : " + xhr);
+                console.log("status! : " + status);
+                console.log("error! : " + error);
+            }
+        })
+
+    }
+    function deleteShare5(){
+        event.preventDefault();
+        event.stopPropagation();
+        var id = $('.btnDelete').val(); //id값이 "id"인 입력란의 값을 저장
+        $.ajax({
+            url:'/member/deleteShare', //Controller에서 요청 받을 주소
+            type:'post', //POST 방식으로 전달
+            data:{member_id:id},
+            dataType : 'text',
+            success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
+                console.log(cnt);
+                if(cnt == 0){ //cnt가 1이 아니면(=0일 경우) -> 사용 가능한 아이디
+                    $('.id_ok').css("display","inline-block");
+                    $('.id_already').css("display", "none");
+                } else { // cnt가 1일 경우 -> 이미 존재하는 아이디
+                    $('.id_already').css("display","inline-block");
+                    $('.id_ok').css("display", "none");
+                    // $('#member_id').val('');
+                }
+            },
+            error : function(xhr, status, error) {
+                console.log("xhr! : " + xhr);
+                console.log("status! : " + status);
+                console.log("error! : " + error);
+            }
+        })
+
     }
 </script>
 </body>

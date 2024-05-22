@@ -90,7 +90,7 @@
             </foreach>
         </if>
         <if test="search_date1 != null and search_date1 != 'null' and search_date1 != ''">
-            and study_display_date_start >= #{search_date1}
+            and #{search_date1} between study_display_date_start and study_display_date_end or study_display_date_start >= #{search_date1}
         </if>
         <if test="search_date2 != null and search_date2 != 'null'  and search_date2 != ''">
             and study_display_date_end <![CDATA[<=]]> #{search_date2}
@@ -145,8 +145,146 @@
 
 
     <select id="shareId" resultType="org.fullstack4.fenny.domain.MemberVO">
-        select member_id, member_name
-        from fenny_member
-        where member_id != #{member_id}
+        SELECT m.member_id AS member_id
+        FROM fenny_member m
+                 LEFT JOIN fenny_study_share s
+                           ON m.member_id = s.to_id
+        WHERE s.to_id IS NULL AND m.member_id != #{member_id};
+
     </select>
+
+
+
+
+    <select id="getShare" resultType="org.fullstack4.fenny.domain.StudyVO">
+        SELECT *
+        FROM fenny_study
+        WHERE (member_id = #{member_id} AND study_share = 'Y')
+        <if test="search_type != null">
+            <foreach collection="search_type" item="type" >
+                <trim prefix="AND (" suffix=")">
+                    <choose>
+                        <when test="type == 't'.toString()">
+                            study_title like concat('%', #{search_word},'%')
+                        </when>
+                        <when test="type == 'c'.toString()">
+                            study_content like concat('%', #{search_word},'%' )
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </if>
+        <if test="search_date1 != null and search_date1 != 'null' and search_date1 != ''">
+            <trim prefix="AND (" suffix=")">
+            study_display_date_start >= #{search_date1}
+            </trim>
+        </if>
+        <if test="search_date2 != null and search_date2 != 'null'  and search_date2 != ''">
+            <trim prefix="AND (" suffix=")">
+             study_display_date_end <![CDATA[<=]]> #{search_date2}
+            </trim>
+        </if>
+        <choose>
+            <when test="sortField != null and sortDir != null">
+                ORDER BY #{sortField} #{sortDir}
+            </when>
+            <otherwise>
+                ORDER BY study_reg_date DESC
+            </otherwise>
+        </choose>
+        limit #{page_skip_count}, #{page_size}
+    </select>
+
+    <select id="getShare2" resultType="org.fullstack4.fenny.domain.StudyVO">
+        SELECT *
+        FROM fenny_study
+        WHERE member_id = 'test' and member_id IN (
+        SELECT to_id FROM fenny_study_share)
+        <if test="search_type != null">
+            <foreach collection="search_type" item="type" >
+                <trim prefix="AND (" suffix=")">
+                    <choose>
+                        <when test="type == 't'.toString()">
+                            study_title like concat('%', #{search_word},'%')
+                        </when>
+                        <when test="type == 'c'.toString()">
+                            study_content like concat('%', #{search_word},'%' )
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </if>
+        <if test="search_date1 != null and search_date1 != 'null' and search_date1 != ''">
+            <trim prefix="AND (" suffix=")">
+                study_display_date_start >= #{search_date1}
+            </trim>
+        </if>
+        <if test="search_date2 != null and search_date2 != 'null'  and search_date2 != ''">
+            <trim prefix="AND (" suffix=")">
+                study_display_date_end <![CDATA[<=]]> #{search_date2}
+            </trim>
+        </if>
+        <choose>
+            <when test="sortField != null and sortDir != null">
+                ORDER BY #{sortField} #{sortDir}
+            </when>
+            <otherwise>
+                ORDER BY study_reg_date DESC
+            </otherwise>
+        </choose>
+        limit #{page_skip_count}, #{page_size}
+    </select>
+
+    <select id="totalShare" resultType="int">
+        select count(*)
+        FROM fenny_study
+        WHERE (member_id = #{member_id} AND study_share = 'Y') or share_id1 = #{member_id} OR share_id2=#{member_id} #{member_id} OR share_id4=#{member_id} OR share_id5=#{member_id}
+        <if test="search_type != null">
+            <foreach collection="search_type" item="type" >
+                <trim prefix="AND (" suffix=")">
+                    <choose>
+                        <when test="type == 't'.toString()">
+                            study_title like concat('%', #{search_word},'%')
+                        </when>
+                        <when test="type == 'c'.toString()">
+                            study_content like concat('%', #{search_word},'%' )
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </if>
+        <if test="search_date1 != null and search_date1 != 'null' and search_date1 != ''">
+            <trim prefix="AND (" suffix=")">
+             study_display_date_start >= #{search_date1}
+            </trim>
+        </if>
+        <if test="search_date2 != null and search_date2 != 'null'  and search_date2 != ''">
+            <trim prefix="AND (" suffix=")">
+           study_display_date_end <![CDATA[<=]]> #{search_date2}
+            </trim>
+        </if>
+    </select>
+
+    <update id="deleteShare1">
+        update fenny_study
+        set share_id1=''
+        where study_idx=#{study_idx}
+    </update>
+
+
+    <insert id="shareID">
+        insert into fenny_study_share(study_idx, member_id, to_id)
+        values(#{study_idx}, #{member_id}, #{to_id})
+    </insert>
+
+    <select id="getShareID" resultType="org.fullstack4.fenny.dto.StudyShareDTO">
+        select to_id, reg_date
+        from fenny_study_share
+        where study_idx = #{study_idx}
+    </select>
+
+    <delete id="deleteShare">
+        delete from fenny_study_share
+        where study_idx=#{study_idx} and to_id=#{to_id}
+    </delete>
 </mapper>

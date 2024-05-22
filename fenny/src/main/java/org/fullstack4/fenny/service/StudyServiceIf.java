@@ -16,4 +16,10 @@ public interface StudyServiceIf {
     int updateLike(int study_idx);
     int likeMember(StudyLikeDTO studyLikeDTO);
     List<MemberDTO> shareId(String member_id);
+    PageResponseDTO<StudyDTO> getShare(PageRequestDTO pageRequestDTO);
+    int deleteShare1(int study_idx);
+    int shareId(StudyShareDTO studyShareDTO);
+    List<StudyShareDTO> getShareId(int study_idx);
+    int deleteShare(StudyShareDTO studyShareDTO);
+    PageResponseDTO<StudyDTO> getShare2(PageRequestDTO pageRequestDTO);
 }

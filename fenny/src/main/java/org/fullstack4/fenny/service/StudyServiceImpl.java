@@ -93,4 +93,63 @@ public class StudyServiceImpl implements StudyServiceIf{
 
         return memberDTOList;
     }
+
+    @Override
+    public PageResponseDTO<StudyDTO> getShare(PageRequestDTO pageRequestDTO) {
+        List<StudyDTO> studyDTOList = studyMapper.getShare(pageRequestDTO).stream()
+                .map(vo->modelMapper.map(vo, StudyDTO.class))
+                .collect(Collectors.toList());
+
+        int total_count = studyMapper.totalShare(pageRequestDTO);
+
+
+
+        log.info("impl studyList : {}", studyDTOList);
+        PageResponseDTO<StudyDTO> responseDTO = PageResponseDTO.<StudyDTO>withAll()
+                .requestDTO(pageRequestDTO)
+                .dtoList(studyDTOList)
+                .total_count(total_count)
+                .build();
+        return responseDTO;
+    }
+
+    @Override
+    public int deleteShare1(int study_idx) {
+        return studyMapper.deleteShare1(study_idx);
+    }
+
+    @Override
+    public int shareId(StudyShareDTO studyShareDTO) {
+        return studyMapper.shareID(studyShareDTO);
+    }
+
+    @Override
+    public List<StudyShareDTO> getShareId(int study_idx) {
+        List<StudyShareDTO> list = studyMapper.getShareID(study_idx);
+        return list;
+    }
+
+    @Override
+    public int deleteShare(StudyShareDTO studyShareDTO) {
+        return studyMapper.deleteShare(studyShareDTO);
+    }
+
+    @Override
+    public PageResponseDTO<StudyDTO> getShare2(PageRequestDTO pageRequestDTO) {
+        List<StudyDTO> studyDTOList = studyMapper.getShare2(pageRequestDTO).stream()
+                .map(vo->modelMapper.map(vo, StudyDTO.class))
+                .collect(Collectors.toList());
+
+        int total_count = studyMapper.totalShare(pageRequestDTO);
+
+
+
+        log.info("impl studyList : {}", studyDTOList);
+        PageResponseDTO<StudyDTO> responseDTO = PageResponseDTO.<StudyDTO>withAll()
+                .requestDTO(pageRequestDTO)
+                .dtoList(studyDTOList)
+                .total_count(total_count)
+                .build();
+        return responseDTO;
+    }
 }
