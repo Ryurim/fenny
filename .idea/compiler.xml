@@ -7,9 +7,13 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
         </processorPath>
-        <module name="fenny.fenny.test" />
-        <module name="fenny.fenny.main" />
+        <module name="fenny.fenny.main~1" />
+        <module name="fenny.fenny.test~1" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="fenny.fenny.main" target="1.8" />
+      <module name="fenny.fenny.test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

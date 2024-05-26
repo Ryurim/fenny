@@ -102,7 +102,7 @@ public class LoginController {
                     CookieUtil.setDeleteCookie(resp, "", "/", 0, "save_check", "checked");
                 }
 
-                return "redirect:/";
+                return "redirect:/my/main";
             }
             else {
                 log.info("LoginController >> 로그인 실패 - 로그인일치 실패");

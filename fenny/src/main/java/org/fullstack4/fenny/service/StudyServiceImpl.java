@@ -96,9 +96,7 @@ public class StudyServiceImpl implements StudyServiceIf{
 
     @Override
     public PageResponseDTO<StudyDTO> getShare(PageRequestDTO pageRequestDTO) {
-        List<StudyDTO> studyDTOList = studyMapper.getShare(pageRequestDTO).stream()
-                .map(vo->modelMapper.map(vo, StudyDTO.class))
-                .collect(Collectors.toList());
+        List<StudyDTO> studyDTOList = studyMapper.getShare(pageRequestDTO);
 
         int total_count = studyMapper.totalShare(pageRequestDTO);
 
@@ -136,12 +134,10 @@ public class StudyServiceImpl implements StudyServiceIf{
 
     @Override
     public PageResponseDTO<StudyDTO> getShare2(PageRequestDTO pageRequestDTO) {
-        List<StudyDTO> studyDTOList = studyMapper.getShare2(pageRequestDTO).stream()
-                .map(vo->modelMapper.map(vo, StudyDTO.class))
-                .collect(Collectors.toList());
+        List<StudyDTO> studyDTOList = studyMapper.getShare2(pageRequestDTO);
+        log.info(studyDTOList);
 
-        int total_count = studyMapper.totalShare(pageRequestDTO);
-
+        int total_count = studyMapper.totalShare2(pageRequestDTO);
 
 
         log.info("impl studyList : {}", studyDTOList);

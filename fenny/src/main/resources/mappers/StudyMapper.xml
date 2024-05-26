@@ -195,11 +195,11 @@
         limit #{page_skip_count}, #{page_size}
     </select>
 
-    <select id="getShare2" resultType="org.fullstack4.fenny.domain.StudyVO">
-        SELECT *
-        FROM fenny_study
-        WHERE member_id = 'test' and member_id IN (
-        SELECT to_id FROM fenny_study_share)
+    <select id="getShare2" resultType="org.fullstack4.fenny.dto.StudyDTO">
+        SELECT f.study_idx AS study_idx, s.member_id AS member_id, study_title, study_content, study_image, study_display_date_start, study_display_date_end, study_reg_date, study_like_count, s.to_id AS to_id, s.reg_date AS share_reg_date
+        FROM fenny_study f
+        RIGHT JOIN fenny_study_share s ON f.study_idx = s.study_idx
+        WHERE s.to_id=#{to_id}
         <if test="search_type != null">
             <foreach collection="search_type" item="type" >
                 <trim prefix="AND (" suffix=")">
@@ -263,6 +263,47 @@
            study_display_date_end <![CDATA[<=]]> #{search_date2}
             </trim>
         </if>
+    </select>
+
+
+    <select id="totalShare2" resultType="int">
+        select count(*)
+        FROM fenny_study f
+        RIGHT JOIN fenny_study_share s ON f.study_idx = s.study_idx
+        WHERE s.to_id=#{to_id}
+        <if test="search_type != null">
+            <foreach collection="search_type" item="type" >
+                <trim prefix="AND (" suffix=")">
+                    <choose>
+                        <when test="type == 't'.toString()">
+                            study_title like concat('%', #{search_word},'%')
+                        </when>
+                        <when test="type == 'c'.toString()">
+                            study_content like concat('%', #{search_word},'%' )
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </if>
+        <if test="search_date1 != null and search_date1 != 'null' and search_date1 != ''">
+            <trim prefix="AND (" suffix=")">
+                study_display_date_start >= #{search_date1}
+            </trim>
+        </if>
+        <if test="search_date2 != null and search_date2 != 'null'  and search_date2 != ''">
+            <trim prefix="AND (" suffix=")">
+                study_display_date_end <![CDATA[<=]]> #{search_date2}
+            </trim>
+        </if>
+        <choose>
+            <when test="sortField != null and sortDir != null">
+                ORDER BY #{sortField} #{sortDir}
+            </when>
+            <otherwise>
+                ORDER BY study_reg_date DESC
+            </otherwise>
+        </choose>
+        limit #{page_skip_count}, #{page_size}
     </select>
 
     <update id="deleteShare1">

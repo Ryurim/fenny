@@ -101,7 +101,7 @@
             </select>
         </div>
     </form>
-
+    
     <div>
         <button onclick="location.href='/share/main'">내가 한 공유</button>
         <button onclick="location.href='/share/main2'">내가 받은 공유</button>
@@ -128,7 +128,7 @@
                         <th>번호</th>
                         <th>제목</th>
                         <th>공유자</th>
-<%--                        <th>공유받는 사람</th>--%>
+                        <th>공유받는 사람</th>
                         <th>등록일</th>
                     </tr>
                     </thead>
@@ -142,12 +142,8 @@
                                     <td class="text-nowrap"><a
                                             href="/share/view?study_idx=${dto.study_idx}">${dto.study_title}</a>
                                     </td>
-                                    <td class="text-nowrap">${dto.member_id}</td>
-<%--                                    <td class="text-nowrap">--%>
-<%--                                        <c:forEach items="${studyShareDTOList}" var="sdto" varStatus="statuss">--%>
-<%--                                            <span id="share${statuss}">${sdto.to_id} (${sdto.reg_date}) </span>--%>
-<%--                                        </c:forEach>--%>
-<%--                                    </td>--%>
+                                    <td>${dto.member_id}</td>
+                                    <td class="text-nowrap">${dto.to_id}</td>
                                     <td class="text-nowrap">${dto.study_reg_date}</td>
                                 </tr>
 

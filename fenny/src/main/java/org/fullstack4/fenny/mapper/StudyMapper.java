@@ -5,6 +5,7 @@ import org.fullstack4.fenny.domain.StudyDetailVO;
 import org.fullstack4.fenny.domain.StudyLikeVO;
 import org.fullstack4.fenny.domain.StudyVO;
 import org.fullstack4.fenny.dto.PageRequestDTO;
+import org.fullstack4.fenny.dto.StudyDTO;
 import org.fullstack4.fenny.dto.StudyShareDTO;
 
 import java.util.List;
@@ -20,12 +21,13 @@ public interface StudyMapper {
     int updateLike(int study_idx);
     int likeMember(StudyLikeVO studyLikeVO);
     List<MemberVO> shareId(String member_id);
-    List<StudyVO> getShare(PageRequestDTO pageRequestDTO);
+    List<StudyDTO> getShare(PageRequestDTO pageRequestDTO);
     int totalShare(PageRequestDTO requestDTO);
     int deleteShare1(int study_idx);
 
     int shareID(StudyShareDTO studyShareDTO);
     List<StudyShareDTO> getShareID(int study_idx);
     int deleteShare(StudyShareDTO studyShareDTO);
-    List<StudyVO> getShare2(PageRequestDTO pageRequestDTO);
+    List<StudyDTO> getShare2(PageRequestDTO pageRequestDTO);
+    int totalShare2(PageRequestDTO requestDTO);
 }

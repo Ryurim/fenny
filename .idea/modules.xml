@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/fenny.iml" filepath="$PROJECT_DIR$/.idea/fenny.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fenny.fenny.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fenny.fenny.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fenny.fenny.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/fenny.fenny.main~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fenny.fenny.test~1.iml" filepath="$PROJECT_DIR$/.idea/modules/fenny.fenny.test~1.iml" />
     </modules>
   </component>
 </project>

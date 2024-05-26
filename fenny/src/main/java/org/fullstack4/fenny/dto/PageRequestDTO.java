@@ -56,6 +56,7 @@ public class PageRequestDTO {
     private String member_id;
     private String sortField;
     private String sortDir;
+    private String to_id;
 
 
     private String[] search_type;

@@ -155,9 +155,9 @@
     //사진 미리보기
     function readURL(input) {
         if (input.files && input.files[0]) {
-
-
-
+            if (document.getElementById("preview") != null) {
+                document.getElementById("preview").remove();
+            }
             var reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById("orgImg");

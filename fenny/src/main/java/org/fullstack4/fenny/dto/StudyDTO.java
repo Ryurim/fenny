@@ -23,6 +23,8 @@ public class StudyDTO {
     private LocalDate study_display_date_start;
     private LocalDate study_display_date_end;
     private LocalDateTime study_reg_date;
+    private String to_id;
+    private LocalDateTime share_reg_date;
     private int study_like_count;
     private String study_share;
     private String study_hashtag;

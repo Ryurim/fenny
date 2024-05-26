@@ -194,7 +194,7 @@ public class StudyController {
         }
     }
     @PostMapping("/my/delete")
-    public String myDeleteGET(@RequestParam int study_idx) {
+    public String myDeleteGET(@RequestParam("study_idx") int study_idx) {
         int result = studyService.deleteStudy(study_idx);
         return "redirect:/my/main";
     }
@@ -231,6 +231,7 @@ public class StudyController {
 
         log.info("studyList : {}", studyList);
         model.addAttribute("qnaList", studyList);
+
     }
 
     @GetMapping("/share/main2")
@@ -238,8 +239,8 @@ public class StudyController {
                           @Valid PageRequestDTO pageRequestDTO,
                           @RequestParam(name = "sortMethod", defaultValue = "") String sortMethod,
                           Model model) {
-        log.info("Share Main");
-        pageRequestDTO.setMember_id(String.valueOf(session.getAttribute("member_id")));
+        log.info("Share Main2");
+        pageRequestDTO.setTo_id(String.valueOf(session.getAttribute("member_id")));
         String sortField = "study_reg_date";
         String sortDir = "desc";
 

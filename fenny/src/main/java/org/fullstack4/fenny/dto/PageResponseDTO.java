@@ -35,6 +35,7 @@ public class PageResponseDTO<E> {
     private String member_id;
     private String sortField;
     private String sortDir;
+    private String to_id;
 
 
     PageResponseDTO() {} //빈으로 등록되기 위해 기본생성자 필요
@@ -64,6 +65,7 @@ public class PageResponseDTO<E> {
         this.member_id = requestDTO.getMember_id();
         this.sortField = requestDTO.getSortField();
         this.sortDir = requestDTO.getSortDir();
+        this.to_id = requestDTO.getTo_id();
 
         this.search_type_string = search_type !=null ? Arrays.toString(search_type).replace("[", "").replace("]", "") : "";
 

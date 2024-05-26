@@ -129,7 +129,7 @@
 
                            <c:forEach items="${studyShareDTOList}" var="dto" varStatus="status">
                                <input type="hidden" name="to_id" id="to_id" value="${dto.to_id}">
-                               <span id="share${status}">${dto.to_id} ${dto.reg_date} <button class="btn text-danger"  id="btnDelete1" onclick="askDelete()">X</button></span>
+                               <span id="share${status}">${dto.to_id} (${dto.reg_date}) <button class="btn text-danger"  id="btnDelete1" onclick="askDelete()">X</button></span>
                            </c:forEach>
 
                         </div>
@@ -137,6 +137,10 @@
 
                     <button class="btn btn-primary" type="button" onclick="location.href='/my/modify?study_idx=${studyDTO.study_idx}'">수정하기</button>
                     <button class="btn btn-secondary" type="button" onclick="location.href='/my/main'">목록으로</button>
+                <form action="/my/delete" method="post">
+                    <input type="hidden" name="study_idx" value="${studyDTO.study_idx}">
+                    <button class="btn btn-danger" type="submit">삭제하기</button>
+                </form>
 
 
 
