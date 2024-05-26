@@ -278,6 +278,8 @@ public class StudyController {
                           HttpSession session,
                           Model model) {
         StudyDTO studyDTO = studyService.viewStudy(study_idx);
+        List<StudyShareDTO> studyShareDTOList = studyService.getShareId(study_idx);
+        model.addAttribute("studyShareDTOList", studyShareDTOList);
         model.addAttribute("studyDTO", studyDTO);
     }
 

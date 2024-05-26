@@ -128,7 +128,7 @@ public class LoginController {
     public String logout(HttpSession session) {
         session.invalidate();
         log.info("LoginController >> logoutGET");
-        return "redirect:/";
+        return "redirect:/my/main";
     }
 
     @GetMapping("/findPwd")

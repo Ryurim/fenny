@@ -69,81 +69,76 @@
             <div class="pd-20 card-box mb-30">
                 <div class="clearfix mb-20">
                     <div class="pull-left">
-                        <h4 class="text-blue h4">나의 학습 조회</h4>
+                        <h4 class="text-blue h4">공유 학습 조회</h4>
 
                     </div>
                 </div>
 
 
-                    <input type="hidden" name="member_id" value="${sessionScope.member_id}">
-                    <input type="hidden" name="study_idx" value="${studyDTO.study_idx}">
+                <input type="hidden" name="member_id" value="${sessionScope.member_id}">
+                <input type="hidden" name="study_idx" id="study_idx" value="${studyDTO.study_idx}">
+                <div class="form-group">
+                    <label for="study_title">제목</label>
+                    <input class="form-control" name="study_title" id="study_title" value="${studyDTO.study_title}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="study_title">좋아요 수</label>
+                    <input class="form-control" name="study_like_count" id="study_like_count" value="${studyDTO.study_like_count}" readonly>
+                </div>
+                <c:if test="${not empty studyDTO.study_image}">
                     <div class="form-group">
-                        <label for="study_title">제목</label>
-                        <input class="form-control" name="study_title" id="study_title" value="${studyDTO.study_title}" readonly>
+                        <label>이미지</label>
+                        <img height="600" width="400" src="/resources/resources/uploads/img/study/${studyDTO.study_image}" alt="">
                     </div>
-                    <div class="form-group">
-                        <label for="study_title">좋아요 수</label>
-                        <input class="form-control" name="study_title" id="study_title" value="${studyDTO.study_like_count}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="study_content">내용</label>
-                        <textarea class="form-control" name="study_content" id="study_content" readonly>${studyDTO.study_content}</textarea>
-                    </div>
+                </c:if>
+                <div class="form-group">
+                    <label for="study_content">내용</label>
+                    <textarea class="form-control" name="study_content" id="study_content" readonly>${studyDTO.study_content}</textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label>오늘의 학습 노출 여부 : </label>
-                        <span>${studyDTO.study_reveal}</span>
-                    </div>
+                <div class="form-group">
+                    <label>오늘의 학습 노출 여부 : </label>
+                    <span>${studyDTO.study_reveal}</span>
+                </div>
                 <div class="form-group">
                     <label>오늘의 학습 공유 여부 : </label>
                     <span>${studyDTO.study_share}</span>
                 </div>
-                    <div class="form-group">
-                        <label>등록일</label>
-                        <span>${studyDTO.study_reg_date}</span>
-                    </div>
-                    <div class="form-group">
-                        <label>노출 기간 </label>
-                        <input type="date" class="form-control col-md-4" value="${studyDTO.study_display_date_start}" name="study_display_date_start" placeholder="선택" readonly> ~
-                        <input type="date" class="form-control col-md-4" value="${studyDTO.study_display_date_end}" name="study_display_date_end" placeholder="선택" readonly >
-                    </div>
-                    <div class="form-group">
-                        <label>이미지</label>
-                        <input type="file" name="upload" class="form-control-file form-control height-auto"  accept="image/png, image/jpeg" readonly >
-                    </div>
-                    <div class="form-group">
-                        <label for="study_category">분야</label>
-                        <input class="form-control" name="study_category" id="study_category" value="${studyDTO.study_category}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="study_hashtag">해시태그</label>
-                        <input class="form-control" name="study_hashtag" id="study_hashtag" value="${studyDTO.study_hashtag}" readonly>
-                    </div>
+                <div class="form-group">
+                    <label>등록일</label>
+                    <span>${studyDTO.study_reg_date}</span>
+                </div>
+                <div class="form-group">
+                    <label>노출 기간 </label>
+                    <input type="date" class="form-control col-md-4" value="${studyDTO.study_display_date_start}" name="study_display_date_start" placeholder="선택" readonly> ~
+                    <input type="date" class="form-control col-md-4" value="${studyDTO.study_display_date_end}" name="study_display_date_end" placeholder="선택" readonly >
+                </div>
 
-                    <div class="form-group">
-                        <label for="study_hashtag">공유한 사람</label>
-                        <c:if test="${not empty studyDTO.share_id1}">
-                            <input class="form-control" type="text" name="share_id1" value="${studyDTO.share_id1}" readonly>
-                        </c:if>
-                        <c:if test="${not empty studyDTO.share_id2}">
-                            <input class="form-control" ="text" name="share_id1" value="${studyDTO.share_id2}" readonly>
-                        </c:if>
-                        <c:if test="${not empty studyDTO.share_id3}">
-                            <input class="form-control" type="text" name="share_id1" value="${studyDTO.share_id3}" readonly>
-                        </c:if>
-                        <c:if test="${not empty studyDTO.share_id4}">
-                            <input class="form-control" type="text" name="share_id1" value="${studyDTO.share_id4}" readonly>
-                        </c:if>
-                        <c:if test="${not empty studyDTO.share_id5}">
-                            <input class="form-control" type="text" name="share_id1" value="${studyDTO.share_id5}" readonly>
-                        </c:if>
-                    </div>
+                <div class="form-group">
+                    <label for="study_category">분야</label>
+                    <input class="form-control" name="study_category" id="study_category" value="${studyDTO.study_category}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="study_hashtag">해시태그</label>
+                    <input class="form-control" name="study_hashtag" id="study_hashtag" value="${studyDTO.study_hashtag}" readonly>
+                </div>
 
-<%--                    <button class="btn btn-primary" type="button" onclick="location.href='/my/modify?study_idx=${studyDTO.study_idx}'">수정하기</button>--%>
-                    <button class="btn btn-secondary" type="button" onclick="location.href='/share/main'">목록으로</button>
-                <c:if test="${sessionScope.member_id eq studyDTO.member_id}">
-                    <button class="btn btn-primary" type="button"  onclick="location.href='/my/modify?study_idx=${studyDTO.study_idx}'">수정하기</button>
-                </c:if>
+                <div class="form-group">
+                    <label for="study_hashtag">공유받은 사람</label>
+                    <div class="d-flex flex-column gap-3 justify-content-center" >
+
+                        <c:forEach items="${studyShareDTOList}" var="dto" varStatus="status">
+                            <input type="hidden" name="to_id" id="to_id" value="${dto.to_id}">
+                            <span id="share${status}">${dto.to_id} (${dto.reg_date}) </span>
+                        </c:forEach>
+
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" type="button" onclick="location.href='/share/main'">목록으로</button>
+
+
+
 
 
             </div>
